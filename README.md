@@ -3,7 +3,7 @@ Standard logger with levels. Uses log package internally, doesn't create its own
 
 # usage
 
-see source code, it's simple enough
+Can be used as a drop-in replacement for standard "log" package, as seen below. For details see source code, it's simple enough.
 
 ```go
 

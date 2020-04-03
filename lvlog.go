@@ -32,9 +32,10 @@ const (
 	INFO
 	WARN
 	ERROR
+	PANIC
 	FATAL
-	ALL  = uint8(TRACE | DEBUG | INFO | WARN | ERROR | FATAL)
-	NORM = uint8(INFO | WARN | ERROR | FATAL)
+	ALL  = uint8(TRACE | DEBUG | INFO | WARN | ERROR | PANIC | FATAL)
+	NORM = uint8(INFO | WARN | ERROR | PANIC | FATAL)
 	NONE = uint8(0x0)
 )
 
@@ -45,6 +46,7 @@ var (
 	InfoLabel  = " [INFO]"
 	WarnLabel  = " [WARN]"
 	ErrorLabel = "[ERROR]"
+	PanicLabel = "[PANIC]"
 	FatalLabel = "[FATAL]"
 )
 
@@ -65,9 +67,14 @@ func printf(label, format string, v ...interface{}) {
 	log.Printf(format, v...)
 }
 
-func print(label string, v ...interface{}) {
+func panicln(label string, v ...interface{}) {
 	v = appendLevel(label, v)
-	log.Print(v...)
+	log.Panicln(v...)
+}
+
+func panicf(label, format string, v ...interface{}) {
+	format = label + " " + format
+	log.Panicf(format, v...)
 }
 
 // Printf is a wrapper of log package log.Printf func
@@ -94,7 +101,7 @@ func Print(v ...interface{}) {
 	if INFO&levels == 0 {
 		return
 	}
-	print(InfoLabel, v...)
+	println(InfoLabel, v...)
 }
 
 func Trace(v ...interface{}) {
@@ -130,6 +137,13 @@ func Error(v ...interface{}) {
 		return
 	}
 	println(ErrorLabel, v...)
+}
+
+func Panic(v ...interface{}) {
+	if PANIC&levels == 0 {
+		return
+	}
+	panicln(PanicLabel, v...)
 }
 
 func Fatal(v ...interface{}) {
@@ -173,6 +187,13 @@ func Errorf(format string, v ...interface{}) {
 		return
 	}
 	printf(ErrorLabel, format, v...)
+}
+
+func Panicf(format string, v ...interface{}) {
+	if PANIC&levels == 0 {
+		return
+	}
+	panicf(PanicLabel, format, v...)
 }
 
 func Fatalf(format string, v ...interface{}) {
